@@ -87,8 +87,7 @@ jobs:
            
        - run: kubectl version --short -o yaml
 
-       - name: fetch nginx ingress controller ip
-         run: echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"  >> $GUTHUB_ENV
+       - run: echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"  >> $GUTHUB_ENV
 
        - name: Replace tokens in k8s manifest files
          uses: cschleiden/replace-tokens@v1
