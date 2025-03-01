@@ -86,5 +86,25 @@ jobs:
            kubeconfig: ${{ secrets.KUBECONFIG }}
            
        - run: kubectl version --short -o yaml
+
+       - name: fetch nginx ingress controller ip
+         run: echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"  >> $GUTHUB_ENV
+
+       - name: Replace tokens in k8s manifest files
+         uses: cschleiden/replace-tokens@v1
+         with:
+           tokenPrefix: '_{_'
+           tokenSuffix: '_}_'
+           files: '["kubernetes/development/*.yaml"]'
+         env:
+          NAMESPACE:  ${{ vars.NAMESPACE }}
+          REPLICAS: ${{ vars.REPLICAS }}
+          IMAGE: ghcr.io/{{ github.repository_owner }}/solar-system:{{ github.sha }}
+          INGRESS_IP: ${{ env.INGRESS_IP }}
+
+       - name: check the files with replaced values
+         run: cat kubernetes/development/*.yaml
+         
+         
         
         
